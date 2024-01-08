@@ -75,29 +75,45 @@ getline(std::cin, name);
 std::cout << "Welcome to Baccarat, " << name << "!" << std::endl;
 std::cout << "======================================" << std::endl;
 
+// Variables
 // Initial money set to 10000
-int money=10000;
+int bet, bet_amount, money=10000;
+bool again=true;
 std::string mystr;
 
 ////
 // Bets
 ////
-int bet, bet_amount;
 
-// Initial bet inputs
-std::cout << "1 - Banker" << "\n" << "2 - Player" << "\n" << "Choose your bet, 1 or 2: ";
-getline(std::cin, mystr);
+while (again){
 
-input_int_check(mystr, 1, 2);
-bet=std::stoi(mystr);
+    // Initial bet inputs
+    std::cout << "1 - Banker" << "\n" << "2 - Player" << "\n" << "Choose your bet, 1 or 2: ";
+    getline(std::cin, mystr);
 
-std::cout << "Current money is £" << money << std::endl;
-std::cout << "Enter a bet amount in whole pounds: ";
-getline(std::cin, mystr);
+    input_int_check(mystr, 1, 2);
+    bet=std::stoi(mystr);
 
-input_int_check(mystr, 1, money);
-bet_amount=std::stoi(mystr);
+    std::cout << "Current money is £" << money << std::endl;
+    std::cout << "Enter a bet amount in whole pounds: ";
+    getline(std::cin, mystr);
 
+    input_int_check(mystr, 1, money);
+    bet_amount=std::stoi(mystr);
 
+    // Ask the player to play again
+    if (money>0) std::cout << "Do you wish to try your luck again? y/n: ";
+    getline(std::cin, mystr);
+
+    while (mystr!="y" && mystr!="Y" && mystr!="n" && mystr!="N"){
+        std::cout << "Please enter either y or n: ";
+        getline(std::cin, mystr);
+    };
+
+    if (mystr=="n" || mystr=="N") {
+        again=false;
+        std::cout << "Thanks for playing!" << std::endl;
+    };
+};
 
 }
