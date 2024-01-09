@@ -154,6 +154,30 @@ void compare_totals(int player, int banker){
     };
 };
 
+// Simple function to save repetition, setup the full shoe of cards
+void card_setup(std::vector<card> &shoe, int n_decks){
+
+    shoe.resize(n_decks*52);
+
+    for (int i=0; i<n_decks; i++){
+        for (int j=0; j<4; j++){
+            shoe[0+j*13+i*52].set_name("ace");
+            shoe[1+j*13+i*52].set_name("two");
+            shoe[2+j*13+i*52].set_name("three");
+            shoe[3+j*13+i*52].set_name("four");
+            shoe[4+j*13+i*52].set_name("five");
+            shoe[5+j*13+i*52].set_name("six");
+            shoe[6+j*13+i*52].set_name("seven");
+            shoe[7+j*13+i*52].set_name("eight");
+            shoe[8+j*13+i*52].set_name("nine");
+            shoe[9+j*13+i*52].set_name("ten");
+            shoe[10+j*13+i*52].set_name("jack");
+            shoe[11+j*13+i*52].set_name("queen");
+            shoe[12+j*13+i*52].set_name("king");
+        };
+    };
+};
+
 int main () {
 
 // Get the player to enter their name
@@ -177,7 +201,14 @@ srand(time(NULL));
 // Bets
 ////
 
+//Variables
+int bet_counter=0, decks=8, random, player_total, banker_total;
+card drawn;
+std::vector<card> cards(decks*52), player_hand, banker_hand;
+
 while (again){
+    bet_counter++;
+    banker_total=0, player_total=0;
 
     // Initial bet inputs
     std::cout << "======================================" << std::endl;
@@ -194,40 +225,24 @@ while (again){
     input_int_check(mystr, 1, money);
     bet_amount=std::stoi(mystr);
 
-    // Cards
-    int decks=8, random, player_total=0, banker_total=0;
-    card drawn;
-    std::vector<card> cards(decks*52), player_hand, banker_hand;
+    // Cards setup and burnt cards
+    if (bet_counter==1 || cards.size()<=7){
+        card_setup(cards, decks);
 
-    for (int i=0; i<decks; i++){
-        for (int j=0; j<4; j++){
-            cards[0+j*13+i*52].set_name("ace");
-            cards[1+j*13+i*52].set_name("two");
-            cards[2+j*13+i*52].set_name("three");
-            cards[3+j*13+i*52].set_name("four");
-            cards[4+j*13+i*52].set_name("five");
-            cards[5+j*13+i*52].set_name("six");
-            cards[6+j*13+i*52].set_name("seven");
-            cards[7+j*13+i*52].set_name("eight");
-            cards[8+j*13+i*52].set_name("nine");
-            cards[9+j*13+i*52].set_name("ten");
-            cards[10+j*13+i*52].set_name("jack");
-            cards[11+j*13+i*52].set_name("queen");
-            cards[12+j*13+i*52].set_name("king");
-        };
-    };
-
-    // Burnt cards
-    random=rand()%cards.size();
-    std::cout << "First coup, so cards shall be burnt" << std::endl;
-    std::cout << "Card burnt face up is " << cards[random].get_name() << ",  burning " << cards[random].get_value() << " cards face down." << std::endl;
-    std::cout << "======================================" << std::endl;
-    cards.erase(cards.begin()+random);
-
-
-    for (int i=0; i<drawn.get_value(); i++){
         random=rand()%cards.size();
+        drawn=card(cards[random]);
+
+        if (bet_counter==1) std::cout << "First coup, so cards shall be burnt." << std::endl;
+        if (bet_counter>1) std::cout << "The cut card (8th remaining card) was drawn, so the shoe is refilled and cards shall be burnt." << std::endl;
+
+        std::cout << "Card burnt face up is " << drawn.get_name() << ",  burning " << drawn.get_value() << " cards face down." << std::endl;
+        std::cout << "======================================" << std::endl;
         cards.erase(cards.begin()+random);
+
+        for (int i=0; i<drawn.get_value(); i++){
+            random=rand()%cards.size();
+            cards.erase(cards.begin()+random);
+        };
     };
 
     ////
@@ -247,7 +262,7 @@ while (again){
 
     // Tie
     if (banker_total>=8 && player_total>=8){
-        std::cout << "Player and Banker draw Naturals.";
+        std::cout << "Player and Banker draw Naturals." << std::endl;
         compare_totals(player_total, banker_total);
     }
     // Natural player win
